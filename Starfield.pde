@@ -1,4 +1,4 @@
-int num = 50, numDucks = 10, direction = 1, startSide = -70;
+int num = 50, numDucks = 10, direction = 1, startSide = -70, startTime = 10, timer = startTime, score = 0;
 float g = 0.5, floorY = 100;
 boolean keys[];
 
@@ -12,9 +12,11 @@ Crosshair ch = new Crosshair(width/2, height/2);
 
 void setup() {
   background(50, 150, 255);
-  //fullScreen();
-  size(1000, 1000);
+  fullScreen();
+  //size(1000, 1000);
   noCursor();
+  textSize(64);
+  textAlign(CENTER, CENTER);
   keys = new boolean[5];
   keys[0] = false;
   keys[1] = false;
@@ -22,36 +24,47 @@ void setup() {
   wingsDown = loadImage("DuckHuntWingsDown.png");
   flap = loadImage("DuckHuntFlapping.png");
   dead = loadImage("Raw_Chicken_JE3_BE3.png");
-  for(int i = 0; i < particle.length; i++) {particle[i] = new Particle(width/2, width/2, 0, 0, 0);}
+  for(int i = 0; i < particle.length; i++) {particle[i] = new Particle(width/2, height/2, 0, 0, 0);}
   for(int i = 0; i < duck.length; i++) {
     if(Math.random() >= 0.5) {
       direction = 1;
     } else {
       direction = -1;
     }
-    duck[i] = new OddballParticle(startSide+Math.random()*100, Math.random()*(height/2)+(height/4), (2.9/2)*((int) (Math.random()*2)+1)*direction, 0, 0, 3, 255);
+    duck[i] = new OddballParticle(startSide+Math.random()*100, Math.random()*(height-200)+50, (2.9/2)*((int) (Math.random()*2)+1)*direction, 0, 0, 3, 255);
   }
 }
 void draw() {
   background(100, 150, 255);
   makeFloor();
-  for(int i = 0; i < duck.length; i++) {
-    if(duck[i].hit > 0) {
-      duck[i].fly();
-    } else {
-      duck[i].gotShot();
-    }
-    duck[i].show();
-  }
-    for(int i = 0; i < particle.length; i++) {
-      if(particle[i].op != 0) {
-        particle[i].hitFloor();
-        particle[i].move();
-        particle[i].show();
+  if(timer >= 0) {
+    for(int i = 0; i < duck.length; i++) {
+      if(duck[i].hit > 0) {
+        duck[i].fly();
+      } else {
+        duck[i].gotShot();
       }
+      duck[i].show();
     }
-  ch.move();
-  ch.show();
+      for(int i = 0; i < particle.length; i++) {
+        if(particle[i].op != 0) {
+          particle[i].hitFloor();
+          particle[i].move();
+          particle[i].show();
+        }
+      }
+    ch.move();
+    ch.show();
+    fill(0);
+    text(score, 64, 64);
+    timer = startTime - millis()/1000;
+    text(timer, width-64, 64);
+  } else {
+    fill(0);
+    textSize(128);
+    text(score, width/2, height/2+64);
+    text("Your score:", width/2, height/2-64);
+  }
 }
 class Particle {
   double x, y, vx, vy;
@@ -138,7 +151,10 @@ class OddballParticle {
       this.y = height-floorY/2-50;
       this.vx *= 0.3;
       this.op *= 0.9;
-      if(this.op <= 0.01) {reset();}
+      if(this.op <= 0.01) {
+      reset();
+      score++;
+    }
     }
     }
     
@@ -148,13 +164,14 @@ class OddballParticle {
       } else {
         direction = -1;
       }
+      this.op = 255;
       this.vx = (2.9/2)*((int) (Math.random()*4)+1)*direction;
       this.x = startSide;
-      this.y = Math.random()*(height/2)+(height/4);
+      this.y = Math.random()*(height-200)+50;
       this.vy = 0;
       this.sprite = 0;
       this.hit = 3;
-      this.op = 255;
+      
     }
   }
 class Crosshair {
@@ -164,13 +181,13 @@ class Crosshair {
     this.y = y;
   }
     void move() {
-        if(keys[0]) {
+        if(keys[0] && !(this.y <= 0)) {
           this.y -= 5;
-        } if(keys[1]) {
+        } if(keys[1] && !(this.y >= height)) {
           this.y += 5;
-        } if(keys[2]) {
+        } if(keys[2] && !(this.x <= 0)) {
           this.x -= 5;
-        } if(keys[3]) {
+        } if(keys[3] && !(this.x >= width)) {
           this.x += 5;
         }
     }
