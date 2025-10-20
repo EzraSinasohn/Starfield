@@ -1,4 +1,4 @@
-int num = 50, numDucks = 10, direction = 1, startSide = -70, startTime = 10, timer = startTime, score = 0;
+int num = 50, numDucks = 10, direction = 1, startSide = -70, startTime = 60, timer = startTime, score = 0;
 float g = 0.5, floorY = 100;
 boolean keys[];
 
