@@ -112,6 +112,7 @@ class Particle {
       this.vx *= 0.3;
       //if(Math.abs(this.vx) <= 0.01) {this.vx = 0;}
       this.op *= 0.9;
+      if(this.op <= 0.01) {this.op = 0;}
     }
   }
 }
