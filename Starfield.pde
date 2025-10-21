@@ -16,6 +16,7 @@ void setup() {
   size(1000, 1000);
   noCursor();
   textAlign(CENTER, CENTER);
+  imageMode(CENTER);
   keys = new boolean[5];
   keys[0] = false;
   keys[1] = false;
@@ -109,17 +110,16 @@ class Particle {
       this.vy = 0;
       this.y = height-floorY/2;
       this.vx *= 0.3;
-      if(Math.abs(this.vx) <= 0.01) {this.vx = 0;}
+      //if(Math.abs(this.vx) <= 0.01) {this.vx = 0;}
       this.op *= 0.9;
-      if(this.op <= 0.01) {this.op = 0;}
     }
   }
 }
 
-class OddballParticle {
-  double x, y, vx, vy;
-  int sprite, hit, op, hurt = 255;
-  public OddballParticle(double x, double y, double vx, double vy, int sprite, int hit, int op) {
+class OddballParticle extends Particle {
+  int sprite, hit, hurt = 255;
+  OddballParticle(double x, double y, double vx, double vy, int sprite, int hit, int op) {
+    super(x, y, vx, vy, op);
     this.x = x;
     this.y = y;
     this.vx = vx;
@@ -163,15 +163,10 @@ class OddballParticle {
     this.vy += g;
     this.y += vy;
     this.x += Math.abs(vx);
-    if(this.y >= height-floorY/2-50) {
-      this.vy = 0;
-      this.y = height-floorY/2-50;
-      this.vx *= 0.3;
-      this.op *= 0.9;
-      if(this.op <= 0.01) {
-      reset();
-      score++;
-    }
+    hitFloor();
+    if(this.op <= 0.01) {
+    reset();
+    score++;
     }
     }
     
@@ -252,7 +247,7 @@ void laserBeam() {
     popMatrix();
     for(int i = 0; i < duck.length; i++) {          
       if(duck[i].vx > 0) {            
-        if(Math.abs(ch.x-(duck[i].x+50)) <= 55 && Math.abs(ch.y-(duck[i].y+50)) <= 30) {
+        if(Math.abs(ch.x-duck[i].x) <= 55 && Math.abs(ch.y-duck[i].y) <= 30) {
           duck[i].hurt -= 100;
           shot();
           duck[i].hit -= 1;
@@ -261,7 +256,7 @@ void laserBeam() {
           }
         }
       } else {
-          if(Math.abs(ch.x-(width-(duck[i].x+50))) <= 55 && Math.abs(ch.y-(duck[i].y+50)) <= 30) {
+          if(Math.abs(ch.x-(width-duck[i].x)) <= 55 && Math.abs(ch.y-duck[i].y) <= 30) {
             duck[i].hurt -= 100;
             shot();
             duck[i].hit -= 1;
@@ -303,7 +298,7 @@ void keyReleased() {
         keys[4] = false;
         for(int i = 0; i < duck.length; i++) {          
           if(duck[i].vx > 0) {            
-            if(Math.abs(ch.x-(duck[i].x+50)) <= 55 && Math.abs(ch.y-(duck[i].y+50)) <= 30) {
+            if(Math.abs(ch.x-duck[i].x) <= 55 && Math.abs(ch.y-duck[i].y) <= 30) {
               duck[i].hurt -= 100;
               shot();
               duck[i].hit -= 1;
@@ -312,7 +307,7 @@ void keyReleased() {
               }
             }
           } else {
-              if(Math.abs(ch.x-(width-(duck[i].x+50))) <= 55 && Math.abs(ch.y-(duck[i].y+50)) <= 30) {
+              if(Math.abs(ch.x-(width-duck[i].x)) <= 55 && Math.abs(ch.y-duck[i].y) <= 30) {
                 duck[i].hurt -= 100;
                 shot();
                 duck[i].hit -= 1;
