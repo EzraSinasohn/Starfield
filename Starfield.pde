@@ -1,6 +1,6 @@
-int num = 50, numDucks = 10, direction = 1, startSide = -70, startTime = 60, timer = startTime, score = 0;
+int num = 50, numDucks = 10, direction = 1, startSide = -70, startTime = 60, timer = startTime, score = 0, relativeTime = 0, laserTime = 0, laserReq = 10;
 float g = 0.5, floorY = 100;
-boolean keys[];
+boolean keys[], laser;
 
 PImage wingsUp, wingsDown, flap, dead;
 
@@ -13,9 +13,8 @@ Crosshair ch = new Crosshair(width/2, height/2);
 void setup() {
   background(50, 150, 255);
   //fullScreen();
-  size(1000, 800);
+  size(1000, 1000);
   noCursor();
-  textSize(64);
   textAlign(CENTER, CENTER);
   keys = new boolean[5];
   keys[0] = false;
@@ -56,14 +55,32 @@ void draw() {
     ch.move();
     ch.show();
     fill(0);
+    textSize(64);
     text(score, 64, 64);
-    timer = startTime - millis()/1000;
+    timer = relativeTime + startTime - millis()/1000;
     text(timer, width-64, 64);
+    if(laser) {laser();}
   } else {
     fill(0);
     textSize(128);
     text(score, width/2, height/2+64);
     text("Your score:", width/2, height/2-64);
+  }
+  if(score == laserReq && !laser) {
+    laser = true;
+    laserTime = timer;
+    laserReq += 10;
+  }
+  if(laser) {
+    stroke(0);
+    fill(255, 0, 0);
+    textSize(50);
+    text("LASER EQUIPPED", width/2, height-50);
+  } else {
+    stroke(0);
+    fill(255, 0, 0);
+    textSize(50);
+    text("Laser in " + (laserReq-score) + " kills.", width/2, height-50);
   }
 }
 class Particle {
@@ -101,7 +118,7 @@ class Particle {
 
 class OddballParticle {
   double x, y, vx, vy;
-  int sprite, hit, op;
+  int sprite, hit, op, hurt = 255;
   public OddballParticle(double x, double y, double vx, double vy, int sprite, int hit, int op) {
     this.x = x;
     this.y = y;
@@ -118,16 +135,16 @@ class OddballParticle {
     scale(-1, 1);
     }
     if(this.sprite == 0) {
-      tint(255, this.op);
+      tint(255, hurt, hurt, this.op);
       image(wingsUp, (float) this.x, (float) this.y, 100, 100);
     } else if(this.sprite == 1) {
-      tint(255, this.op);
+      tint(255, hurt, hurt, this.op);
       image(flap, (float) this.x, (float) this.y, 100, 100);
     } else if(this.sprite == 2) {
-      tint(255, this.op);
+      tint(255, hurt, hurt, this.op);
       image(wingsDown, (float) this.x, (float) this.y, 100, 100);
     } else if(this.sprite == 3) {
-      tint(255, this.op);
+      tint(255, hurt, hurt, this.op);
     } else if(this.sprite == 4) {
       tint(255, this.op);
       image(dead, (float) this.x, (float) this.y, 50, 50);
@@ -165,6 +182,7 @@ class OddballParticle {
         direction = -1;
       }
       this.op = 255;
+      hurt = 255;
       this.vx = (2.9/2)*((int) (Math.random()*4)+1)*direction;
       this.x = startSide;
       this.y = Math.random()*(height-200)+50;
@@ -218,6 +236,46 @@ void shot() {
   }
 }
 
+void laser() {
+  if(laserTime-timer < 5) {
+    stroke(255, 0, 0);
+    line((float) ch.x, (float) ch.y, width, height);
+    fill(100);
+    stroke(0);
+    pushMatrix();
+    translate(width, height);
+    rotate((float) (Math.atan2(width-ch.x, -height+ch.y)));
+    rect(-50, 0, 100, 400);
+    fill(0);
+    rotate(PI);
+    text(5-(laserTime-timer), 0, -200);
+    popMatrix();
+    for(int i = 0; i < duck.length; i++) {          
+      if(duck[i].vx > 0) {            
+        if(Math.abs(ch.x-(duck[i].x+50)) <= 55 && Math.abs(ch.y-(duck[i].y+50)) <= 30) {
+          duck[i].hurt -= 100;
+          shot();
+          duck[i].hit -= 1;
+          if(duck[i].hit == 0) {
+            duck[i].vy = Math.random()*5-7;
+          }
+        }
+      } else {
+          if(Math.abs(ch.x-(width-(duck[i].x+50))) <= 55 && Math.abs(ch.y-(duck[i].y+50)) <= 30) {
+            duck[i].hurt -= 100;
+            shot();
+            duck[i].hit -= 1;
+            if(duck[i].hit == 0) {
+              duck[i].vy = Math.random()*5-7;
+            }
+          }
+      }
+    }
+  } else {
+    laser = false;
+  }
+}
+
 void keyPressed() {
       if(keyCode == UP) {
         keys[0] = true;
@@ -243,9 +301,10 @@ void keyReleased() {
         keys[3] = false;
       } if(key == ' ') {
         keys[4] = false;
-        for(int i = 0; i < duck.length; i++) {
+        for(int i = 0; i < duck.length; i++) {          
           if(duck[i].vx > 0) {            
             if(Math.abs(ch.x-(duck[i].x+50)) <= 55 && Math.abs(ch.y-(duck[i].y+50)) <= 30) {
+              duck[i].hurt -= 100;
               shot();
               duck[i].hit -= 1;
               if(duck[i].hit == 0) {
@@ -254,6 +313,7 @@ void keyReleased() {
             }
           } else {
               if(Math.abs(ch.x-(width-(duck[i].x+50))) <= 55 && Math.abs(ch.y-(duck[i].y+50)) <= 30) {
+                duck[i].hurt -= 100;
                 shot();
                 duck[i].hit -= 1;
                 if(duck[i].hit == 0) {
@@ -263,6 +323,18 @@ void keyReleased() {
           }
         }
       }
+}
+
+void mousePressed() {
+  if(timer < 0) {
+    relativeTime = millis()/1000;
+    timer = startTime;
+    laserTime = 0;
+    laserReq = 10;
+    laser = false;
+    score = 0;
+    
+  }
 }
 
 
