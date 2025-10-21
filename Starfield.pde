@@ -333,5 +333,6 @@ void mousePressed() {
     laserReq = 10;
     laserOn = false;
     score = 0;
+    for(int i = 0; i < duck.length; i++) {duck[i].reset();}
   }
 }
