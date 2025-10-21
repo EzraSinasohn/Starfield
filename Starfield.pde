@@ -1,6 +1,6 @@
 int num = 50, numDucks = 10, direction = 1, startSide = -70, startTime = 60, timer = startTime, score = 0, relativeTime = 0, laserTime = 0, laserReq = 10;
 float g = 0.5, floorY = 100;
-boolean keys[], laser;
+boolean keys[], laserOn;
 
 PImage wingsUp, wingsDown, flap, dead;
 
@@ -59,19 +59,19 @@ void draw() {
     text(score, 64, 64);
     timer = relativeTime + startTime - millis()/1000;
     text(timer, width-64, 64);
-    if(laser) {laser();}
+    if(laserOn) {laserBeam();}
   } else {
     fill(0);
     textSize(128);
     text(score, width/2, height/2+64);
     text("Your score:", width/2, height/2-64);
   }
-  if(score == laserReq && !laser) {
-    laser = true;
+  if(score == laserReq && !laserOn) {
+    laserOn = true;
     laserTime = timer;
     laserReq += 10;
   }
-  if(laser) {
+  if(laserOn) {
     stroke(0);
     fill(255, 0, 0);
     textSize(50);
@@ -236,7 +236,7 @@ void shot() {
   }
 }
 
-void laser() {
+void laserBeam() {
   if(laserTime-timer < 5) {
     stroke(255, 0, 0);
     line((float) ch.x, (float) ch.y, width, height);
@@ -272,7 +272,7 @@ void laser() {
       }
     }
   } else {
-    laser = false;
+    laserOn = false;
   }
 }
 
@@ -331,9 +331,8 @@ void mousePressed() {
     timer = startTime;
     laserTime = 0;
     laserReq = 10;
-    laser = false;
+    laserOn = false;
     score = 0;
-    
   }
 }
 
