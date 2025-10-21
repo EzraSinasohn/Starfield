@@ -221,7 +221,11 @@ void makeFloor() {
 
 void shot() {
   tempList = particle;
-  num += 50;
+  if(!laserOn) {
+    num += 50;
+  } else {
+    num += 10;
+  } 
   particle = new Particle[num];
   for(int i = 0; i < particle.length; i++) {
     if(i < tempList.length) {
