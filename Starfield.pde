@@ -7,7 +7,7 @@ PImage wingsUp, wingsDown, flap, dead;
 Particle[] particle = new Particle[num];
 Particle[] tempList;
 OddballParticle[] duck = new OddballParticle[numDucks];
-Crosshair ch = new Crosshair(width/2, height/2);
+Crosshair ch = new Crosshair(500, 400);
 
 
 void setup() {
