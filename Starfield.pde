@@ -57,7 +57,7 @@ void draw() {
     fill(0);
     textSize(64);
     text(score, 64, 64);
-    timer = relativeTime + startTime - millis()/1000;
+    timer = relativeTime + startTime - (int) (millis()/1000);
     text(timer, width-64, 64);
     if(laserOn) {laserBeam();}
   } else {
@@ -327,7 +327,7 @@ void keyReleased() {
 
 void mousePressed() {
   if(timer < 0) {
-    relativeTime = millis()/1000;
+    relativeTime = (int) (millis()/1000);
     timer = startTime;
     laserTime = 0;
     laserReq = 10;
@@ -335,5 +335,3 @@ void mousePressed() {
     score = 0;
   }
 }
-
-
