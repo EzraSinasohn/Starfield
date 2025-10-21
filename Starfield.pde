@@ -12,8 +12,8 @@ Crosshair ch = new Crosshair(width/2, height/2);
 
 void setup() {
   background(50, 150, 255);
-  fullScreen();
-  //size(1000, 1000);
+  //fullScreen();
+  size(1000, 800);
   noCursor();
   textSize(64);
   textAlign(CENTER, CENTER);
