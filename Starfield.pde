@@ -1,4 +1,4 @@
-int num = 50, numDucks = 10, direction = 1, startSide = -70, startTime = 60, timer = startTime, score = 0, relativeTime = 0, laserTime = 0, laserReq = 10;
+int num = 0, numDucks = 10, direction = 1, startSide = -70, startTime = 60, timer = startTime, score = 0, relativeTime = 0, laserTime = 0, laserReq = 10;
 float g = 0.5, floorY = 100;
 boolean keys[], laserOn;
 
@@ -61,27 +61,27 @@ void draw() {
     timer = relativeTime + startTime - (int) (millis()/1000);
     text(timer, width-64, 64);
     if(laserOn) {laserBeam();}
+    if(score == laserReq && !laserOn) {
+      laserOn = true;
+      laserTime = timer;
+      laserReq += 10;
+    }
+    if(laserOn) {
+      stroke(0);
+      fill(255, 0, 0);
+      textSize(50);
+      text("LASER EQUIPPED", width/2, height-50);
+    } else {
+      stroke(0);
+      fill(255, 0, 0);
+      textSize(50);
+      text("Laser in " + (laserReq-score) + " kills.", width/2, height-50);
+    }
   } else {
     fill(0);
     textSize(128);
     text(score, width/2, height/2+64);
     text("Your score:", width/2, height/2-64);
-  }
-  if(score == laserReq && !laserOn) {
-    laserOn = true;
-    laserTime = timer;
-    laserReq += 10;
-  }
-  if(laserOn) {
-    stroke(0);
-    fill(255, 0, 0);
-    textSize(50);
-    text("LASER EQUIPPED", width/2, height-50);
-  } else {
-    stroke(0);
-    fill(255, 0, 0);
-    textSize(50);
-    text("Laser in " + (laserReq-score) + " kills.", width/2, height-50);
   }
 }
 class Particle {
@@ -222,7 +222,7 @@ void makeFloor() {
 void shot() {
   tempList = particle;
   if(!laserOn) {
-    num += 50;
+    num += 30;
   } else {
     num += 10;
   } 
@@ -334,5 +334,7 @@ void mousePressed() {
     laserOn = false;
     score = 0;
     for(int i = 0; i < duck.length; i++) {duck[i].reset();}
+    num = 0;
+    particle = new Particle[num];
   }
 }
